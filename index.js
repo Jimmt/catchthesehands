@@ -2,7 +2,8 @@ var gameWidth = 1280,
     gameHeight = 720;
 var game = new Phaser.Game(gameWidth, gameHeight, Phaser.CANVAS, "phaser-container", { preload: preload, create: create, update: update, render: render });
 
-var button, text, controls, lbutton, rbutton;
+var button, text, controls, lbutton, rbutton, scoreText;
+var score = 0;
 var max;
 var leftKey, rightKey, aKey, dKey;
 var leftPrev, rightPrev;
@@ -11,6 +12,7 @@ var cycles = 0;
 var lhand, rhand;
 var lBox, rBox;
 var maxHead, maxHeadRadius = 115;
+var handSpeed = 600;
 var lresponse, rresponse;
 var graphics;
 var gameOver = true;
@@ -79,6 +81,7 @@ function create() {
     lresponse = new SAT.Response();
     rresponse = new SAT.Response();
     text = game.add.text(gameWidth / 2, gameHeight / 2, "Max Wang Catches Hands", { font: '40px Arial', fill: "#ff0044", align: 'center' });
+    scoreText = game.add.text(0, 0, "Score: 0", { font: '40px Arial', fill: "#ff0044", align: 'center' });
     text.x = gameWidth / 2 - text.width / 2;
     text.y = gameHeight / 2 - 100;
     button = game.add.button(gameWidth / 2 - 100, gameHeight / 2 - 50, 'button', click);
@@ -97,11 +100,14 @@ function create() {
 
 function punch(cycles) {
     if (cycles / 60 % 2 == 0) {
+        score++;
+    	scoreText.text = "Score: " + score;
         var fromLeft = Math.random() >= 0.5;
         var hand = fromLeft ? lhand : rhand;
         var startingX = hand.x;
-        var tween1 = game.add.tween(hand).to({ x: hand.x + (fromLeft ? 1 : -1) * 700 }, 700, "Linear");
-        var tween2 = game.add.tween(hand).to({ x: startingX }, 700, "Linear");
+        handSpeed = 700 - 200 * ((cycles / 60) / 30);
+        var tween1 = game.add.tween(hand).to({ x: hand.x + (fromLeft ? 1 : -1) * 700 }, handSpeed, "Linear");
+        var tween2 = game.add.tween(hand).to({ x: startingX }, handSpeed, "Linear");
         tween1.chain(tween2);
         tween1.start();
     }
