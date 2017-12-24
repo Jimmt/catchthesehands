@@ -2,7 +2,7 @@ var gameWidth = 1280,
     gameHeight = 720;
 var game = new Phaser.Game(gameWidth, gameHeight, Phaser.CANVAS, "phaser-container", { preload: preload, create: create, update: update, render: render });
 
-var button, text, controls;
+var button, text, controls, lbutton, rbutton;
 var max;
 var leftKey, rightKey, aKey, dKey;
 var leftPrev, rightPrev;
@@ -15,7 +15,9 @@ var lresponse, rresponse;
 var graphics;
 var gameOver = true;
 var DEBUG = true;
+var tilt = 0;
 DEBUG = false;
+
 
 function preload() {
     game.load.image("max", "max.png");
@@ -23,17 +25,28 @@ function preload() {
     game.load.image("button", "button.png");
     game.load.image("restartbutton", "restart_button.png");
     game.load.image("controlsbutton", "controls_button.png");
+    game.load.image("lbutton", "l_button.png");
+    game.load.image("rbutton", "r_button.png");
 }
 
 function click(){
 	text.visible = false;
 	button.visible = false;
 	controls.visible = false;
+	// lbutton.visible = false;
+	// rbutton.visible = false;
 	gameOver = false;
 }
 
 function showControls(){
 	alert("Punches come from the left and right. Use A/D or left/right arrow keys to dodge these punches to the left and right.")
+}
+
+function lpress(){
+	tilt = -1;
+}
+function rpress(){
+	tilt = 1;
 }
 
 function create() {
@@ -70,6 +83,16 @@ function create() {
     text.y = gameHeight / 2 - 100;
     button = game.add.button(gameWidth / 2 - 100, gameHeight / 2 - 50, 'button', click);
     controls = game.add.button(gameWidth / 2 - 100, gameHeight / 2 + 100, 'controlsbutton', showControls);
+    lbutton = game.add.button(0, gameHeight - 100, 'lbutton', function(){});
+    rbutton = game.add.button(gameWidth - 100, gameHeight - 100, 'rbutton', function(){});
+    lbutton.events.onInputDown.add(lpress);
+    rbutton.events.onInputDown.add(rpress);
+    lbutton.events.onInputUp.add(function(){
+    	tilt = 0;
+    });
+    rbutton.events.onInputUp.add(function(){
+    	tilt = 0;
+    });
 }
 
 function punch(cycles) {
@@ -101,7 +124,7 @@ function update() {
         makeGameOver();
     }
     punch(cycles);
-    if (leftKey.isDown || aKey.isDown) {
+    if (leftKey.isDown || aKey.isDown || tilt < 0) {
         tween = game.add.tween(max).to({ angle: -angleTo }, 100, "Linear", true);
         leftPrev = true;
         // max.angle--;
@@ -109,7 +132,7 @@ function update() {
         leftPrev = false;
         tween = game.add.tween(max).to({ angle: 0 }, 100, "Linear", true);
     }
-    if (rightKey.isDown || dKey.isDown) {
+    if (rightKey.isDown || dKey.isDown || tilt > 0) {
         tween = game.add.tween(max).to({ angle: angleTo }, 100, "Linear", true);
         rightPrev = true;
         // max.angle++;
