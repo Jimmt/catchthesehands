@@ -22,11 +22,13 @@ DEBUG = false;
 
 
 function preload() {
-    game.load.image("max", "max.png");
+    game.load.image("lena", "lena.png");
+    game.load.image("max", "max.png");	
     game.load.image("hand", "glove.png");
     game.load.image("button", "button.png");
     game.load.image("restartbutton", "restart_button.png");
     game.load.image("controlsbutton", "controls_button.png");
+	game.load.image("switchbutton", "switch_button.png");
     game.load.image("lbutton", "l_button.png");
     game.load.image("rbutton", "r_button.png");
 }
@@ -38,6 +40,7 @@ function click(){
 	// lbutton.visible = false;
 	// rbutton.visible = false;
 	gameOver = false;
+	switchChar.visible = false;
 }
 
 function showControls(){
@@ -85,7 +88,20 @@ function create() {
     text.x = gameWidth / 2 - text.width / 2;
     text.y = gameHeight / 2 - 100;
     button = game.add.button(gameWidth / 2 - 100, gameHeight / 2 - 50, 'button', click);
-    controls = game.add.button(gameWidth / 2 - 100, gameHeight / 2 + 100, 'controlsbutton', showControls);
+    controls = game.add.button(gameWidth / 2 - 100, gameHeight / 2 + 75, 'controlsbutton', showControls);
+	switchChar = game.add.button(gameWidth / 2 - 100, gameHeight / 2 + 200, 'switchbutton', 
+		function(){
+			if(max.key == "max"){
+			max.loadTexture("lena");
+			text.text = "Lena Catches Hands";
+			} else {
+			max.loadTexture("max");
+			text.text = "Max Wang Catches Hands";
+			}
+			text.x = gameWidth / 2 - text.width / 2;
+			text.y = gameHeight / 2 - 100;
+		}
+	);
     lbutton = game.add.button(0, gameHeight - 100, 'lbutton', function(){});
     rbutton = game.add.button(gameWidth - 100, gameHeight - 100, 'rbutton', function(){});
     lbutton.events.onInputDown.add(lpress);
